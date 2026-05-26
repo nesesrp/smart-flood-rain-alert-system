@@ -81,8 +81,8 @@ while True:
     act(risk, temp, hum, rain_det, rain_val)
 
     # Log
-    print("Rain analog :", rain_val)
-    print("Rain digital:", rain_det, "(0=rain, 1=clear)")
+    rain_status = "YES" if (rain_det == 0 or rain_val < 1000) else "No"
+    print("Rain        :", rain_status)
     print("Water level :", water_val)
     print("Temperature :", temp, "C  Humidity:", hum, "%")
     print("Risk        :", risk)
