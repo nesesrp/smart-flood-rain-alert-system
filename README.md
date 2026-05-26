@@ -19,8 +19,10 @@ An intelligent flood and rain detection system built with ESP32-S3 and MicroPyth
 
 ```
 .
-├── main.py          # MicroPython code — runs on ESP32-S3 hardware
-├── simulation.py    # PC simulation — demonstrates PEAS class structure
+├── main.py             # MicroPython code — runs on ESP32-S3 hardware
+├── simulation.py       # Terminal simulation — demonstrates PEAS class structure
+├── simulation_gui.py   # GUI simulation — Tkinter interface with Start/Stop control
+├── dashboard.py        # PC dashboard — reads live data from ESP32 via serial port
 └── README.md
 ```
 
@@ -30,8 +32,8 @@ An intelligent flood and rain detection system built with ESP32-S3 and MicroPyth
 
 | Component | Pin |
 |-----------|-----|
-| Rain sensor (analog) | GPIO 14 |
-| Rain sensor (digital) | GPIO 15 |
+| Rain sensor (analog AO) | GPIO 15 |
+| Rain sensor (digital DO) | GPIO 14 |
 | Water level sensor | GPIO 2 |
 | Buzzer | GPIO 20 |
 | LED | GPIO 9 |
@@ -48,8 +50,8 @@ An intelligent flood and rain detection system built with ESP32-S3 and MicroPyth
 
 | Risk | Condition | Buzzer | LED | OLED |
 |------|-----------|--------|-----|------|
-| HIGH | Rain detected + water level high | ON | ON | `!! FLOOD RISK !!` |
-| MEDIUM | Rain detected OR water level medium | OFF | ON | `** WARNING **` |
+| HIGH | Water level high (> 3000) | ON | ON | `!! FLOOD RISK !!` |
+| MEDIUM | Water level medium (> 550) OR rain detected | OFF | ON | `** WARNING **` |
 | LOW | All clear | OFF | OFF | `** ALL CLEAR **` |
 
 OLED display layout (128×64):
@@ -64,7 +66,7 @@ Humid : 53 %
 
 ---
 
-## Running the Simulation (PC)
+## Running the Terminal Simulation (PC)
 
 No hardware required. Runs on standard Python 3.
 
@@ -96,10 +98,51 @@ Risk Level  : HIGH
 
 === PERFORMANCE REPORT ===
 Total Steps       : 15
-Correct Detections: 15
-False Alarms      : 0
-Accuracy          : 100.0%
+Correct Detections: 13
+False Alarms      : 1
+Accuracy          : 86.7%
 ```
+
+---
+
+## Running the GUI Simulation (PC)
+
+A Tkinter-based graphical simulation of the PEAS agent. No hardware required.
+
+**Requirements:**
+```bash
+brew install python-tk@3.14   # macOS only, if tkinter is missing
+```
+
+**Run:**
+```bash
+python3 simulation_gui.py
+```
+
+**How to use:**
+- Press **▶ Start** — sensor values update automatically every 2 seconds
+- Press **⏹ Stop** — pauses the simulation
+- The risk banner changes color: red (HIGH), orange (MEDIUM), green (LOW)
+- Performance panel tracks Steps, Correct detections, False Alarms, and Accuracy in real time
+
+---
+
+## Running the PC Dashboard (Live Hardware)
+
+Reads real sensor data from the ESP32-S3 via USB serial and displays it on a graphical dashboard.
+
+**Requirements:**
+```bash
+pip3 install pyserial
+```
+
+**Run:**
+```bash
+python3 dashboard.py
+```
+
+> Make sure the ESP32-S3 is connected and running `main.py` before launching the dashboard.  
+> Default port: `/dev/cu.usbserial-14420` — edit `PORT` in `dashboard.py` if your port is different.
 
 ---
 
@@ -137,7 +180,7 @@ python3 -m mpremote connect /dev/cu.usbserial-14420 run main.py
 
 ### 1. Install tools
 ```bash
-pip3 install esptool mpremote
+pip3 install esptool mpremote pyserial
 ```
 
 ### 2. Flash MicroPython firmware to ESP32-S3
