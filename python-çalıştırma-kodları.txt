@@ -1,0 +1,3 @@
+ Dashbordu çalıştırmak için : python3 dashboard.py
+ Espye kod yüklemek için : python3 -m mpremote connect /dev/cu.usbserial-14420 run main.py
+ Simülasyon için :python3 simulation.py

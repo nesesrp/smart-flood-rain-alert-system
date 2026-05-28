@@ -240,8 +240,6 @@ class FloodAlertGUI:
         self.false_lbl   = self._perf_box(prow, "False Alarms", "0")
         self.acc_lbl     = self._perf_box(prow, "Accuracy",     "—")
 
-        self._build_log("Step Log")
-
         btn_row = tk.Frame(self.root, bg=BG)
         btn_row.pack(pady=10)
         self.start_btn = tk.Button(
@@ -262,6 +260,14 @@ class FloodAlertGUI:
         self.step_info = tk.Label(self.root, text="Step: 0  |  Interval: 2 sec",
                                   font=("Helvetica", 10), bg=BG, fg=SUBTEXT)
         self.step_info.pack()
+
+        tk.Button(
+            self.root, text="← Back to Menu",
+            font=("Helvetica", 10),
+            bg="#000000", fg=BG, activebackground="#222222", activeforeground=BG,
+            relief="flat", padx=16, pady=6,
+            command=self._back
+        ).pack(pady=(4, 10))
 
     # Live layout — matches dashboard.py
     def _build_live(self):
@@ -286,7 +292,15 @@ class FloodAlertGUI:
 
         self.status_lbl = tk.Label(self.root, text="Connecting…",
                                    font=("Helvetica", 9), bg=BG, fg=SUBTEXT)
-        self.status_lbl.pack(pady=6)
+        self.status_lbl.pack(pady=(6, 2))
+
+        tk.Button(
+            self.root, text="← Back to Menu",
+            font=("Helvetica", 10),
+            bg="#000000", fg=BG, activebackground="#222222", activeforeground=BG,
+            relief="flat", padx=16, pady=6,
+            command=self._back
+        ).pack(pady=(0, 8))
 
     # ── Shared Layout Helpers ─────────────────────────────────────────
 
@@ -423,9 +437,6 @@ class FloodAlertGUI:
         self._update_actuators(risk)
         self._update_perf()
         self.step_info.config(text=f"Step: {self.step}  |  Interval: 2 sec")
-        self._log(f"[{self.step}]  Risk={risk}  Water={env_state['water_level']}"
-                  f"  Rain={'YES' if rain else 'No '}"
-                  f"  Temp={env_state['temperature']}°C  Hum={env_state['humidity']}%")
 
     # ── Live Serial ───────────────────────────────────────────────────
 
@@ -532,6 +543,22 @@ class FloodAlertGUI:
         self.correct_lbl.config(text=str(self.agent.correct))
         self.false_lbl.config(text=str(self.agent.false_alarms))
         self.acc_lbl.config(text=f"{self.agent.accuracy():.1f}%")
+
+    def _back(self):
+        self._stop() if self.mode == "simulation" else None
+        self._live_running = False
+        if self.serial_conn and self.serial_conn.is_open:
+            self.serial_conn.close()
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.root.geometry("440x300")
+        sel = tk.Toplevel(self.root)
+        dialog = ModeDialog(sel)
+        self.root.wait_window(sel)
+        if dialog.mode is None:
+            self.root.destroy()
+            return
+        self.__init__(self.root, mode=dialog.mode, port=dialog.port)
 
     def on_close(self):
         self.running       = False
