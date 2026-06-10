@@ -74,8 +74,6 @@ class FloodAlertAgent:
         else:
             return "LOW"
 
-    def accuracy(self):
-        return (self.correct / max(self.total, 1)) * 100
 
 # ── Colors ────────────────────────────────────────────────────────────
 
@@ -238,7 +236,6 @@ class FloodAlertGUI:
         self.step_lbl    = self._perf_box(prow, "Steps",        "0")
         self.correct_lbl = self._perf_box(prow, "Correct",      "0")
         self.false_lbl   = self._perf_box(prow, "False Alarms", "0")
-        self.acc_lbl     = self._perf_box(prow, "Accuracy",     "—")
 
         btn_row = tk.Frame(self.root, bg=BG)
         btn_row.pack(pady=10)
@@ -542,7 +539,6 @@ class FloodAlertGUI:
         self.step_lbl.config(text=str(self.agent.total))
         self.correct_lbl.config(text=str(self.agent.correct))
         self.false_lbl.config(text=str(self.agent.false_alarms))
-        self.acc_lbl.config(text=f"{self.agent.accuracy():.1f}%")
 
     def _back(self):
         self._stop() if self.mode == "simulation" else None

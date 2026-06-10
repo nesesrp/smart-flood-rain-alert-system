@@ -35,8 +35,11 @@ An intelligent flood and rain detection system built with ESP32-S3 and MicroPyth
 | Rain sensor (analog AO) | GPIO 15 |
 | Rain sensor (digital DO) | GPIO 14 |
 | Water level sensor | GPIO 2 |
-| Buzzer | GPIO 20 |
+| Buzzer | GPIO 21 |
 | LED | GPIO 9 |
+| Green LED (LOW) | GPIO 40 |
+| Yellow LED (MEDIUM) | GPIO 45 |
+| Red LED (HIGH) | GPIO 41 |
 | DHT11 (data) | GPIO 4 |
 | OLED SDA | GPIO 37 |
 | OLED SCL | GPIO 36 |
@@ -48,11 +51,11 @@ An intelligent flood and rain detection system built with ESP32-S3 and MicroPyth
 
 ## Risk Levels
 
-| Risk | Condition | Buzzer | LED | OLED |
-|------|-----------|--------|-----|------|
-| HIGH | Water level high (> 3000) | ON | ON | `!! FLOOD RISK !!` |
-| MEDIUM | Water level medium (> 550) OR rain detected | OFF | ON | `** WARNING **` |
-| LOW | All clear | OFF | OFF | `** ALL CLEAR **` |
+| Risk | Condition | Buzzer | LED (GPIO 9) | Green (GPIO 40) | Yellow (GPIO 45) | Red (GPIO 41) | OLED |
+|------|-----------|--------|--------------|-----------------|------------------|---------------|------|
+| HIGH | Water level high (> 3000) | ON | ON | OFF | OFF | ON | `!! FLOOD RISK !!` |
+| MEDIUM | Water level medium (> 550) OR rain detected | OFF | ON | OFF | ON | OFF | `** WARNING **` |
+| LOW | All clear | OFF | OFF | ON | OFF | OFF | `** ALL CLEAR **` |
 
 OLED display layout (128×64):
 ```
@@ -100,7 +103,6 @@ Risk Level  : HIGH
 Total Steps       : 15
 Correct Detections: 13
 False Alarms      : 1
-Accuracy          : 86.7%
 ```
 
 ---
@@ -123,7 +125,7 @@ python3 simulation_gui.py
 - Press **▶ Start** — sensor values update automatically every 2 seconds
 - Press **⏹ Stop** — pauses the simulation
 - The risk banner changes color: red (HIGH), orange (MEDIUM), green (LOW)
-- Performance panel tracks Steps, Correct detections, False Alarms, and Accuracy in real time
+- Performance panel tracks Steps, Correct detections, and False Alarms in real time
 
 ---
 
